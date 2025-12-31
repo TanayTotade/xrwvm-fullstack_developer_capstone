@@ -82,12 +82,24 @@ def registration(request):
         return JsonResponse(data)
 
 def get_dealerships(request, state="All"):
-    if(state == "All"):
+    if state == "All":
         endpoint = "/fetchDealers"
     else:
-        endpoint = "/fetchDealers/"+state
-    dealerships = get_request(endpoint)
-    return JsonResponse({"status":200,"dealers":dealerships})
+        endpoint = f"/fetchDealers/{state}"
+
+    response = get_request(endpoint)
+
+    if isinstance(response, dict) and "data" in response:
+        dealerships = response["data"]
+    else:
+        dealerships = []
+
+    print("FINAL DEALERS COUNT:", len(dealerships))
+
+    return JsonResponse({
+        "status": 200,
+        "dealers": dealerships
+    })
 
 def get_dealer_reviews(request, dealer_id):
     if(dealer_id):
